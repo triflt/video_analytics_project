@@ -1,56 +1,40 @@
 import psycopg2
 from sqlalchemy import create_engine
+from sqlalchemy import text
 import config
 
-#connection = psycopg2.connect(database="video_analytics", user="user", password="user", host="localhost", port=5432)
-
 def get_db_engine():
-    return create_engine(f'postgresql://{config.DB_USER}:{config.DB_PASSWORD}@postgres:5432/{config.DB_NAME}')
+    return create_engine(f'postgresql://{config.DB_USER}:{config.DB_PASSWORD}@localhost:5432/{config.DB_NAME}')
 
 try:
     db_engine = get_db_engine().connect()
 except Exception as e:
     print(e)
 
-#cursor = connection.cursor()
-
-def insert():
-    """ Create tables in the PostgreSQL database"""
-    commands = (
-        """
-        INSERT INTO video_analytics.states (id, state) VALUES (1, 'state1');
-        """,
-        """
-        INSERT INTO video_analytics.predictions (id, id_frame, prediction) VALUES (1, 1, 'prediction1');
-        """
-        )
+def insert(state):
+    command = f"INSERT INTO video_analytics.states (state) VALUES ('{state}') RETURNING id"
     try:
-        #with connection.cursor() as cur:
-            # execute the CREATE TABLE statement
-        for command in commands:
-            db_engine.execute(command)
+        result = db_engine.execute(text(command)).fetchall()
+        db_engine.commit()
+        print(result)
+        return {"id": str(result[0])}
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+        return {"error": error}
 
-def select():
-    """ Create tables in the PostgreSQL database"""
-    commands = (
-        """
-        SELECT * FROM video_analytics.states;
-        """,
-        """
-        SELECT * FROM video_analytics.predictions;
-        """
-        )
+def select(video_id):
+    command = f"SELECT state FROM video_analytics.states WHERE id={video_id}"
     try:
-        #with connection.cursor() as cur:
-            # execute the CREATE TABLE statement
-        for command in commands:
-            db_engine.execute(command)
-            print(db_engine.fetchone())
+        result = db_engine.execute((text(command))).fetchall()
+        db_engine.commit()
+        for row in result:
+            print(row)
+        return {"id": str(result[0])}
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+        return {"error": error}
+    
 
 if __name__ == '__main__':
-    insert()
-    #select()
+    insert('heh')
+    select(34)

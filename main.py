@@ -1,52 +1,45 @@
 import uvicorn
-from aiokafka import AIOKafkaProducer
+from kafka import KafkaProducer
 from fastapi import FastAPI
 from sqlalchemy.sql import text
 
 from utils import serializer
+from db import insert, select
 import config
 from sqlalchemy import create_engine
 
 def get_db_engine():
     return create_engine(f'postgresql://{config.DB_USER}:{config.DB_PASSWORD}@postgres:5432/{config.DB_NAME}')
 
-'''import psycopg2
-
-connection = psycopg2.connect(database="video_analytics", user="user", password="user", host="localhost", port=5432)
-cursor = connection.cursor()'''
-
 app = FastAPI()
 
 @app.get("/")
-async def root():
+def root():
     return {"message": "App Started"}
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    await producer.stop()
+'''@app.on_event("shutdown")
+def shutdown_event():
+
+    return producer.stop()'''
 
 @app.on_event("startup")
-async def startup_event():
+def startup_event():
     global producer
-    producer = AIOKafkaProducer(
+    producer = KafkaProducer(
         bootstrap_servers=f'{config.HOST}:{config.PORT}',
         value_serializer=serializer,
         compression_type="gzip"
     )
-    await producer.start()
+    #return producer.start()
 
 @app.post("/videos/")
-async def post_video(item: str):
-    pass
+def post_video(state: str):
+    insert(state)
+    producer.send(config.TOPIC, state)
 
 @app.get("/videos/{video_id}")
-async def get_video_status(video_id: str):
-    result = db_engine.execute(text("SELECT state FROM first_table WHERE id=:id"), {"id": video_id})
-    state = result.fetchone()
-    if state:
-        return {"state": state[0]}
-    else:
-        return {"message": "Item not found"}
+def get_video_status(video_id: str):
+    return select(video_id)
 
 
 if __name__ == '__main__':
