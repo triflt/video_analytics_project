@@ -1,3 +1,6 @@
 HOST = 'localhost'
 PORT = 29092
-WEATHER_TOPIC = 'weather'
+TOPIC = 'video'
+DB_PASSWORD = 'postgres'
+DB_USER = 'postgres'
+DB_NAME = 'video_analytics'

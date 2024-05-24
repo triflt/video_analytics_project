@@ -1,35 +1,24 @@
 import asyncio
-import json
 from aiokafka import AIOKafkaConsumer
 
 import config
-
-
-def deserializer(serialized):
-    """
-    Десериализатор получаемых данных
-    """
-    return json.loads(serialized)
-
-
-async def event_handler(value):
-    """
-    Обработчик события. Как только мы получаем новое сообщение,
-    будет отрабатывать данная функция
-    """
-    print(f"Temperature: {value['temp']}, weather: {value['weather']}")
+from utils import deserializer
 
 
 async def consume():
     consumer = AIOKafkaConsumer(
-        config.WEATHER_TOPIC,
+        config.TOPIC,
         bootstrap_servers=f'{config.HOST}:{config.PORT}',
         value_deserializer=deserializer
     )
     await consumer.start()
     try:
         async for msg in consumer:
-            await event_handler(msg.value)
+            print(
+            "{}:{:d}:{:d}: key={} value={} timestamp_ms={}".format(
+                msg.topic, msg.partition, msg.offset, msg.key, msg.value,
+                msg.timestamp)
+        )
     finally:
         await consumer.stop()
 
