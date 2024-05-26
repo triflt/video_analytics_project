@@ -9,6 +9,6 @@ CREATE TABLE video_analytics.states (
 CREATE TABLE video_analytics.predictions (
             id SERIAL PRIMARY KEY,
             id_frame INTEGER,
-            prediction VARCHAR,
+            prediction JSONB,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );

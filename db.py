@@ -1,6 +1,5 @@
-import psycopg2
-from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
+import json
 import config
 
 def get_db_engine():
@@ -11,30 +10,38 @@ try:
 except Exception as e:
     print(e)
 
-def insert(state):
+def init_state(state):
     command = f"INSERT INTO video_analytics.states (state) VALUES ('{state}') RETURNING id"
     try:
         result = db_engine.execute(text(command)).fetchall()
         db_engine.commit()
-        print(result)
-        return {"id": str(result[0])}
-    except (psycopg2.DatabaseError, Exception) as error:
+        return result[0]
+    except ValueError as error:
         print(error)
         return {"error": error}
 
-def select(video_id):
+def get_state(video_id):
     command = f"SELECT state FROM video_analytics.states WHERE id={video_id}"
     try:
         result = db_engine.execute((text(command))).fetchall()
         db_engine.commit()
-        for row in result:
-            print(row)
-        return {"id": str(result[0])}
-    except (psycopg2.DatabaseError, Exception) as error:
+        return result[0]
+    except ValueError as error:
+        print(error)
+        return {"error": error}
+
+def save_prediction(json_data):
+    command = f"INSERT INTO video_analytics.states (prediction) VALUES (%s) {[json.dumps(json_data)]}"
+    try:
+        result = db_engine.execute((text(command))).fetchall()
+        db_engine.commit()
+        return result[0]
+    except ValueError as error:
         print(error)
         return {"error": error}
     
 
 if __name__ == '__main__':
-    insert('heh')
-    select(34)
+    test_text = 'test'
+    id = init_state(test_text)
+    assert get_state(id[0])[0] == test_text 
