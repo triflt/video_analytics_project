@@ -7,7 +7,7 @@ from kafka import KafkaProducer
 from fastapi import FastAPI, File, UploadFile
 from tempfile import NamedTemporaryFile
 
-import db
+import database.db as db
 import config
 
 def preprocessing(frame):
@@ -87,7 +87,7 @@ def get_inference_result(video_id: str):
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)
     try:
         db_engine = db.get_db_engine().connect()
     except Exception as e:

@@ -35,17 +35,34 @@ services:
       - "5432:5432"
     #networks:
     #  - dem
-  app:
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/video_analytics_project
-    depends_on:
-      - postgres
-    #networks:
-    #  - dem
+
+  # app:
+  #   container_name: "app"
+  #   restart: unless-stopped
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   volumes:
+  #     - .:/video_analytics_project
+  #   depends_on:
+  #     - postgres
+  #   #networks:
+  #   #  - dem
+
+  # runner:
+  #   container_name: "runner"
+  #   restart: unless-stopped
+  #   build:
+  #     context: runner/
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/video_analytics_project
+  #   depends_on:
+  #     - postgres
+  #   #networks:
+  #   #  - dem
 
   pgadmin:
     image: dpage/pgadmin4:latest

@@ -3,7 +3,7 @@ import json
 import config
 
 def get_db_engine():
-    return create_engine(f'postgresql://{config.DB_USER}:{config.DB_PASSWORD}@postgres:5432/{config.DB_NAME}')
+    return create_engine(f'postgresql://{config.DB_USER}:{config.DB_PASSWORD}@localhost:5432/{config.DB_NAME}')
 
 try:
     db_engine = get_db_engine().connect()

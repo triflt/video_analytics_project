@@ -1,0 +1,4 @@
+ultralytics
+kafka-python
+opencv-python
+sqlalchemy

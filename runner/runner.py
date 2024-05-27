@@ -9,7 +9,7 @@ from kafka import KafkaConsumer
 sys.path.append('../')
 
 import config
-import db
+import database.db as db
 
 def preprocessing(frame):
     resized_frame = cv2.resize(frame, (640, 480))
