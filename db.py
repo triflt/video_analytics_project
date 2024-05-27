@@ -20,6 +20,15 @@ def init_state(state):
         print(error)
         return {"error": error}
 
+def update_state(state, video_id):
+    command = f"UPDATE video_analytics.states SET state='{state}' WHERE id={video_id}"
+    try:
+        db_engine.execute(text(command))
+        db_engine.commit()
+    except ValueError as error:
+        print(error)
+        return {"error": error}
+
 def get_state(video_id):
     command = f"SELECT state FROM video_analytics.states WHERE id={video_id}"
     try:
@@ -29,13 +38,22 @@ def get_state(video_id):
     except ValueError as error:
         print(error)
         return {"error": error}
-
-def save_prediction(json_data):
-    command = f"INSERT INTO video_analytics.states (prediction) VALUES (%s) {[json.dumps(json_data)]}"
+    
+def select_inference_result(video_id):
+    command = f"SELECT prediction from video_analytics.predictions WHERE id={video_id}"
     try:
         result = db_engine.execute((text(command))).fetchall()
         db_engine.commit()
-        return result[0]
+        return result
+    except ValueError as error:
+        print(error)
+        return {"error": error}
+
+def save_prediction(json_data, video_id):
+    command = f"INSERT INTO video_analytics.predictions (prediction, id) VALUES ('{json.dumps(json_data)}', {video_id})"
+    try:
+        db_engine.execute((text(command)))
+        db_engine.commit()
     except ValueError as error:
         print(error)
         return {"error": error}

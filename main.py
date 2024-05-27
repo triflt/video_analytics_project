@@ -30,9 +30,10 @@ def startup_event():
         #compression_type="gzip"
     )
 
-@app.post("/videos/")
+@app.post("/prediction/")
 def post_video(file: UploadFile = File(...)):
     temp = NamedTemporaryFile(delete=False)
+    result = 'no_result'
     try:
         try:
             contents = file.file.read()
@@ -46,15 +47,21 @@ def post_video(file: UploadFile = File(...)):
 
         result = db.init_state(config.States.PROCESSING)
         cap = cv2.VideoCapture(temp.name)
+        fps = cap.get(cv2.CAP_PROP_FPS)      # OpenCV v2.x used "CV_CAP_PROP_FPS"
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        duration = frame_count / fps
+        print(f'FPS: {fps}; Frame count: {frame_count}; Duration: {duration}')
         while cap.isOpened():
             success, frame = cap.read()
             if success:
                 preprocessed_frame = preprocessing(frame)
                 _, encoded_frame = cv2.imencode('.jpg', preprocessed_frame)
                 preprocessed_frame = base64.b64encode(encoded_frame.tobytes()).decode('utf-8')
-                #print(preprocessed_frame)
-                data = {'frame': preprocessed_frame}
+                data = {'frame': preprocessed_frame,
+                        'video_id': result[0],
+                        'frame_count': frame_count}
                 producer.send(config.FRAMES_TOPIC, data)
+            else:
                 break
 
     except Exception as exept:
@@ -64,11 +71,19 @@ def post_video(file: UploadFile = File(...)):
         os.remove(temp.name)
         return {"id": str(result[0])}
 
-@app.get("/videos/{video_id}")
+@app.get("/states/{video_id}")
 def get_video_status(video_id: str):
     try:
         result = db.get_state(video_id)
-        return {"id": str(result[0])}
+        return {"state": str(result[0])}
+    except ValueError as error:
+        return {"error": error}
+
+@app.get("/prediction/{video_id}")
+def get_inference_result(video_id: str):
+    try:
+        result = db.select_inference_result(video_id)
+        return {"result": {id_frame + 1: result[id_frame][0] for id_frame in range(len(result))}}
     except ValueError as error:
         return {"error": error}
 
