@@ -1,5 +1,3 @@
-# video_analytics_project
-
 ## MISIS final project for Python practice. "Distributed video analytics system"
 
 ### api
