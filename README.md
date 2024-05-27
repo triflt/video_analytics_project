@@ -3,39 +3,52 @@ MISIS final project for Infrastructure Python
 
 ## Распределенная система видео аналитики
 
-### uml
-- https://habr.com/ru/companies/alfa/articles/740518/
-
-## api
+### api
 - **GET** - информация о сценарии по его ID (текущий статус \ параметры работы \ ...)
 - **POST** - изменение состояния стейт-машины (запуск \ остановка \ ...)
 
-### docs
-- https://fastapi.tiangolo.com/
-- https://github.com/aio-libs/aiokafka
-### healthcheck
-- https://habr.com/ru/companies/nixys/articles/544288/
-- https://github.com/peter-evans/docker-compose-healthcheck
-
-## orchestrator (orchestration \ choreography \ mix \ ...)
+### orchestrator (orchestration \ choreography \ mix \ ...)
 - **чтение события (команды)** - получение запроса от api
 - **контроль состояния** - сохранение \ изменение
 - **выполнение действия** - управление runner`ом
 
 ### state machine
-- **init_startup** - инициализация запуска
-- **in_startup_processing** - промежуточное состояние, олицетворяющее процесс запуска
-- **init_shutdown** - инициализация остановки
-- **in_shutdown_processing** - промежуточное состояние, олицетворяющее процесс остановки
-- **active** - активная состояние \ работа 
-- **inactive** - выключенное состояние
+- **PROCESSING** - процессинг видео
+- **INFERENCING** - инференс видео
+- **FINISHED** - успешный инференс видео
 
-## runner
+### runner & inference
 - **чтение кадра** - живой поток (rtsp \ onvif \ ...) и\или заготовленное локальное видео
 - **отправка кадра** - отправка кадра в сервис предсказания
-- **получение результата** - чтение результатов с предсказаниями
-
-## inference
-- **чтение кадра** - получение кадра из очереди
 - **предсказание** - inference
 - **отправка результатов** - возврат результатов в runner
+
+## How to Get Started
+
+1. Install all required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Run the Docker Compose to initialize the environment:
+   ```bash
+   docker compose up -d
+   ```
+3. Start the main application:
+   ```bash
+   python main.py
+   ```
+4. Navigate to the runner directory:
+   ```bash
+   cd runner
+   ```
+5. Execute the runner script:
+   ```bash
+   python runner.py
+   ```
+
+Description of each row:
+1. Install necessary Python packages listed in the requirements.txt file.
+2. Initialize the environment using Docker Compose in detached mode.
+3. Run the main application with Python.
+4. Access the directory named runner.
+5. Execute the Python script runner.py to perform runner tasks.

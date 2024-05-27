@@ -2,5 +2,6 @@ fastapi
 uvicorn
 kafka-python
 opencv-python
+ultralytics
 sqlalchemy
 psycopg2

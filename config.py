@@ -13,3 +13,4 @@ class States:
     PROCESSING = 'video_processing'
     INFERENCING = 'video_inferencing'
     FINISHED = 'video_inference_finished'
+    
