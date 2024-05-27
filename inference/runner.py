@@ -40,7 +40,8 @@ def consume():
             frame_bytes = base64.b64decode(frame)
             frame_array = np.frombuffer(frame_bytes, dtype=np.uint8)
             frame = cv2.imdecode(frame_array, cv2.IMREAD_COLOR)
-            prediction = predictor(frame)
+            preprocessed_frame = preprocessing(frame)
+            prediction = predictor(preprocessed_frame)
             if len(prediction[0].boxes.xyxy) > 0:
                 predicions = {"boxes": prediction[0].boxes.xyxy.tolist(),
                               "conf": prediction[0].boxes.conf.tolist(),

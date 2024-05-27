@@ -33,8 +33,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
-    networks:
-      - dem
+    #networks:
+    #  - dem
   app:
     restart: unless-stopped
     build:
@@ -44,8 +44,8 @@ services:
       - .:/video_analytics_project
     depends_on:
       - postgres
-    networks:
-      - dem
+    #networks:
+    #  - dem
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -58,8 +58,8 @@ services:
       - "5000:80"
     depends_on:
       - postgres
-    networks:
-      - dem
+    #networks:
+    #  - dem
 
-networks:
-  dem:
+#networks:
+#  dem:

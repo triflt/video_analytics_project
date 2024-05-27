@@ -8,7 +8,6 @@ from fastapi import FastAPI, File, UploadFile
 from tempfile import NamedTemporaryFile
 
 import db
-#from inference import preprocessing
 import config
 
 def preprocessing(frame):
@@ -26,8 +25,8 @@ def startup_event():
     global producer
     producer = KafkaProducer(
         bootstrap_servers=f'{config.HOST}:{config.PORT}',
-        value_serializer=lambda v: json.dumps(v).encode("utf-8")
-        #compression_type="gzip"
+        value_serializer=lambda v: json.dumps(v).encode("utf-8"), 
+        api_version=config.API_VERSION
     )
 
 @app.post("/prediction/")
@@ -47,15 +46,14 @@ def post_video(file: UploadFile = File(...)):
 
         result = db.init_state(config.States.PROCESSING)
         cap = cv2.VideoCapture(temp.name)
-        fps = cap.get(cv2.CAP_PROP_FPS)      # OpenCV v2.x used "CV_CAP_PROP_FPS"
+        fps = cap.get(cv2.CAP_PROP_FPS)
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         duration = frame_count / fps
         print(f'FPS: {fps}; Frame count: {frame_count}; Duration: {duration}')
         while cap.isOpened():
             success, frame = cap.read()
             if success:
-                preprocessed_frame = preprocessing(frame)
-                _, encoded_frame = cv2.imencode('.jpg', preprocessed_frame)
+                _, encoded_frame = cv2.imencode('.jpg', frame)
                 preprocessed_frame = base64.b64encode(encoded_frame.tobytes()).decode('utf-8')
                 data = {'frame': preprocessed_frame,
                         'video_id': result[0],
