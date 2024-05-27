@@ -1,7 +1,6 @@
 # video_analytics_project
-MISIS final project for Infrastructure Python
 
-## Распределенная система видео аналитики
+## MISIS final project for Python practice. "Distributed video analytics system"
 
 ### api
 - **GET** - информация о сценарии по его ID (текущий статус \ параметры работы \ ...)
