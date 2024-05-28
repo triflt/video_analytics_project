@@ -36,6 +36,7 @@ def consume() -> None:
         if message.topic == config.FRAMES_TOPIC:
             if video_id != message.value['video_id']:
                 video_id = message.value['video_id']
+                frame_counter = 1
                 total_frames = message.value['frame_count']
                 db.update_state(state=config.States.INFERENCING, video_id=video_id)
                 print(f'Video {video_id} is inferencing')

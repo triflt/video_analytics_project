@@ -11,18 +11,6 @@ from typing import Union, Dict
 import database.db as db
 import config
 
-def preprocessing(frame: cv2.VideoCapture) -> cv2.VideoCapture:
-    """
-    Preprocesses the input frame.
-
-    Args:
-        frame (cv2.VideoCapture): The frame to preprocess.
-
-    Returns:
-        cv2.VideoCapture: The preprocessed frame.
-    """
-    resized_frame = cv2.resize(frame, (640, 480))
-    return resized_frame
 
 app = FastAPI()
 
